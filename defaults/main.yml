@@ -1,0 +1,25 @@
+---
+# defaults file for netdata
+#
+#
+# --- Update Netdata ---
+# If setted to true update the current installation of netdata
+netdataupdate: False
+
+# --- Binded address ---
+# If setted to true netdata.conf will be configure to bind to the specific address founded in
+# ipaddrs variable address
+bind: True
+
+# --- Location url of kickstart netdata ---
+# url where netdata kickstart is been downloaded
+kickstarturl: "https://my-netdata.io/kickstart-static64.sh"
+
+# --- Define the ipaddress where netdata will bind ---
+# This role can define the default bind to ipaddress the netdata will listen
+# If you set your private netrole here then this role whill find  
+# find the private ipaddress and only bind netdata to local network
+# If you have more then one subnet you can specify multiple ranges by following this array statment
+ipaddrs:
+  - 10.0
+  - 192.168

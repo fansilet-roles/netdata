@@ -1,0 +1,12 @@
+---
+# tasks file for netdata
+
+# --- Installing netdata ---
+- import_tasks: install.yml
+
+# --- Configuring netdata ---
+- import_tasks: confs.yml
+
+# --- Clearing temp files ---
+- import_tasks: clear.yml
+

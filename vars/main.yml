@@ -1,0 +1,7 @@
+---
+# vars file for netdata
+netdata_dir: "/opt/netdata"
+netdata_config: "{{ netdata_dir }}/etc/netdata/netdata.conf"
+kickstart_installer: "/tmp/kickstart-netdata64.sh"
+
+

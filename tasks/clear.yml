@@ -1,0 +1,9 @@
+---
+#Clearing temp files
+#
+# --- Cleaning Temp ---
+- name: "Clearing temp files"
+  file: 
+    path: "{{ kickstart_installer }}"
+    state: absent
+  when: kickstart.changed

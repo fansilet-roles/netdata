@@ -1,0 +1,12 @@
+---
+# handlers file for netdata
+#
+# === Starting Netdata ===
+  - name: " Daemon | Staring netdata "
+    service:
+      name: netdata
+      state: started
+      enabled: yes
+    listen: "start netdata"
+    register: NetdataStarted
+

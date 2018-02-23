@@ -1,0 +1,30 @@
+---
+#Configure netdata.conf
+#To debug you can use this fact filter
+#debug: var={{ ansible_all_ipv4_addresses | ipaddr('private') | first}}
+# --- the below alternative is with multiple or's like ---
+  #  when: 
+  #   - "item.startswith('10.150') or 
+  #      item.startswith('10.151') or 
+  #      item.startswith('10.0')"
+# i do prefer to use this in loop in place of use multiple "or" statements
+
+# --- Discovering private ipaddr to set bind to ---
+- name: "Discovering private ipaddr"
+  debug: var=ansible_all_ipv4_addresses
+- set_fact:
+    man_ip: "{{ item[0] }}"
+  when: 
+   - "item[0].startswith('{{ item[1] }}')"  
+  with_nested: 
+    - "{{ ansible_all_ipv4_addresses }}"
+    - "{{ ipaddrs }}"
+- debug: var=man_ip
+
+- name: "Configuring netdata.conf"
+  template:
+    src: "netdata.j2"
+    dest: "{{ netdata_config }}"
+  when: bind
+  register: configured
+  become: true

@@ -1,0 +1,29 @@
+---
+# === Installing Netdata ===
+# 
+
+# --- Checking netdata dir ---
+- name: "Check install"
+  stat:
+    path: "{{ netdata_dir }}"
+  register: netdata_installed
+
+
+# --- Download netdata kickstart static --- 
+- name: "Downloading NetData"
+  get_url: 
+    url: "{{ kickstarturl }}"
+    dest: "{{ kickstart_installer }}"
+    mode: 0755
+    validate_certs: false
+  when: 
+    - netdata_installed.stat.exists == False or netdataupdate == true 
+  register: kickstart
+
+# --- Installing netdata static ---
+- name: "Installing Netdata Static with kickstart"
+  #command: "{{ kickstart }} --dont-wait --dont-start-it"
+  command: "{{ kickstart_installer }} --dont-wait"
+  when: kickstart.changed
+  register: installed
+
