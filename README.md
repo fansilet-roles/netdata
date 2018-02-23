@@ -23,35 +23,37 @@ This are the variables you can adjust in your playbook
   
   **ipaddrs** : This array must contain the subnets who netdata will bind to.  
 
-    If you have a server that has a public ip address and you want netdata to only listen on private  
-    subnet of this server. So you will need to configure netdata.conf bind to = myprivate_address  
-    This role can discover the private ipaddress by the initial of your subnet, so  
-    all you must do is set on this array the initial octet of your subnet.
-    eg.:
-      If your subnet is: 192.168.23.0/26
-      the array must be:
+  If you have a server that has a public ip address and you want netdata to only listen on private  
+  subnet of this server. So you will need to configure netdata.conf bind to = myprivate_address  
+  This role can discover the private ipaddress by the initial of your subnet, so  
+  all you must do is set on this array the initial octet of your subnet.
+  eg.:
+    If your subnet is: 192.168.23.0/26
+    the array must be:
       
-      ```
-      ipaddrs:
-        - 192.168.23
-      ```
-    It will also work with multiple subnets:
+   ```
+   ipaddrs:
+     - 192.168.23
+   ```
+  
+ It will also work with multiple subnets:
 
-      ```
-      ipaddrs:
-        - 192.168
-        - 10.0
-        - 10.1
-        ...
-      ```
+   ```
+   ipaddrs:
+     - 192.168
+     - 10.0
+     - 10.1
+     ...
+   ```
+   
+ If the private address of the host match with the subnet 10.0, this will define ```netdata.conf```to somenthing like:  
 
-    If the private address of the host match with the subnet 10.0, this will define ```netdata.conf```to somenthing like:  
-    ```
-    [global]
-    bind to = 127.0.0.1:19999 ::1:19999 10.0.1.1:199999
-    ```
+  ```
+  [global]
+  bind to = 127.0.0.1:19999 ::1:19999 10.0.1.1:199999
+  ```
     
-    This way you can prevent netdata to listen on public address.
+ This way you can prevent netdata to listen on public address.
 
 Dependencies
 ------------
@@ -104,5 +106,5 @@ LGPL-3.0
 Author Information
 ------------------
 
-This role was create in 2017 by [isca](https://isca.space)
+This role was create in 2018 by [isca](https://isca.space)
 
