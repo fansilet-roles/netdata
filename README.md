@@ -3,21 +3,30 @@ NetData
   
 [![Build Status](https://travis-ci.org/isca0/netdata.svg?branch=master)](https://travis-ci.org/isca0/netdata)
   
-Install, update and bind netdata to a specific address.
-This role use the netdata static64 script to install netdata, so it can be used in any kind of  
-GNU/Linux distribution.
+Install, update netdata and adjsut a few more util things on netdata.conf.  
+
+This role can bind to a specific address, setup a registry, configure retention time,  
+adjust KSM(Kernel Same-page Merging) and a few more things. Keep reading. :wink:  
+The installation process of this role use the netdata static64 script to install, so it can be  
+used in any kind of GNU/Linux distribution. But i tested it on Centos6,7 and CoreOS.  
 
 Requirements
 ------------
 
-The target host will need python, bash and curl.
+The target host will need python and bash.
 
 Role Variables
 --------------
 
-This are the variables you can adjust in your playbook
+This is the variables you can adjust in your playbook:
 
-  **netdataupdate** : can be setted to True are False. If True netdata will be installed and updated.  
+  **netdataupdate** : can be setted to True or False. If True netdata will be installed and updated.  
+  
+  **historytime** : How much time you want to retention of data. Default is 3600 == 1Hour
+  
+  **updatetime** : Adjust data collection frequency, Default 1 == 1s. On weak devices set this to 3 or more.
+  
+  **ksmset** : Manage KSM Settings, this can increase 50~60% of netdata performance. Default is True  
   
   **bind** : if setted to True, netdata will bind to the private address matched on **ipaddrs** variable.  
   
@@ -50,7 +59,8 @@ This are the variables you can adjust in your playbook
 
   ```
   [global]
-  bind to = 127.0.0.1:19999 ::1:19999 10.0.1.1:199999
+  bind to = 127.0.0.1:19999 [::1]:19999 10.0.1.1:199999
+  ...
   ```
     
  This way you can prevent netdata to listen on public address.
@@ -74,9 +84,9 @@ it will not be upgraded. This will also disable private binding address so netda
 - name: "Deploy Netdata"
   hosts: somehost
   remote_user: myuser
+  become: true
   vars:
     netdataupdate: False
-    bind: False
   roles:
     - isca0.netdata
 ```
@@ -88,8 +98,31 @@ only to private subnets that matchs with 10.0 and 192.168.
 - name: "Deploy Netdata"
   hosts: somehost
   remote_user: myuser
+  become: true
   vars:
     netdataupdate: True
+    bind: True
+    ipaddrs:
+      - 10.0
+      - 192.168
+  roles:
+    - isca0.netdata
+```
+
+This is the most complete sample os this rule it uses almost all variables. Using this way you  
+netdata will update even if it already is installed, set the retention time of data to 4 hours  
+and data collection will be every 2 seconds and it will bind to macthed ip address finded  
+on the match subnets.
+
+```
+- name: "Deploy Netdata"
+  hosts: somehost
+  remote_user: myuser
+  become: true
+  vars:
+    netdataupdate: True
+    historytime: 14400
+    updatetime: 2
     bind: True
     ipaddrs:
       - 10.0

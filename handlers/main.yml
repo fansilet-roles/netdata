@@ -1,12 +1,34 @@
 ---
 # handlers file for netdata
 #
-# === Starting Netdata ===
-  - name: " Daemon | Staring netdata "
+
+# === Systemd Daemon Reload ===
+  - name: " Daemon | Reload "
+    shell: "(systemctl daemon-reload)"
+    listen: 'reload daemon'
+    register: ReloadedDaemon
+
+# === Starting KSM ===
+  - name: " Daemon | Starting and Enabling KSM "
     service:
-      name: netdata
+      name: ksmnetdata
       state: started
       enabled: yes
-    listen: "start netdata"
-    register: NetdataStarted
+    listen: "start ksm"
+    register: KsmStarted
+
+# === Restarting Netdata ===
+  - name: " Daemon | Restaring netdata "
+    service:
+      name: netdata
+      state: restarted
+      enabled: yes
+    listen: "restart netdata"
+    register: NetdataRestarted
+
+# === rc.local Netdata ===
+  - name: "Daemon | Set KSM on the fly"
+    shell: "(echo 1 > /sys/kernel/mm/ksm/run;echo 1000 > /sys/kernel/mm/ksm/sleep_millisecs)"
+    listen: "load ksmlocal"
+    register: KsmLocalSetted
 

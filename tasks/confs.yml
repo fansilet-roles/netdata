@@ -1,13 +1,21 @@
 ---
-#Configure netdata.conf
-#To debug you can use this fact filter
-#debug: var={{ ansible_all_ipv4_addresses | ipaddr('private') | first}}
+# === Configure netdata.conf ===
+#
+# --- About WARNINGS on when statments ---
+# The task "Discovering private ipaddr" uses a loop inside when statement.
+# I do prefer to use this in loop in place of use multiple "or" statements, but when on loop returns  
+# a waring. But works!
+# To use this task without a loop you will need multiple "or's" so it will look like this:
 # --- the below alternative is with multiple or's like ---
+  #  ...
   #  when: 
   #   - "item.startswith('10.150') or 
   #      item.startswith('10.151') or 
   #      item.startswith('10.0')"
-# i do prefer to use this in loop in place of use multiple "or" statements
+  #      ...
+# To debug you can use this fact filter:
+# debug: var={{ ansible_all_ipv4_addresses | ipaddr('private') | first}}
+
 
 # --- Discovering private ipaddr to set bind to ---
 - name: "Discovering private ipaddr"
@@ -21,10 +29,45 @@
     - "{{ ipaddrs }}"
 - debug: var=man_ip
 
+
+# --- Configuring netdata.conf ----
 - name: "Configuring netdata.conf"
   template:
     src: "netdata.j2"
     dest: "{{ netdata_config }}"
   when: bind
   register: configured
-  become: true
+
+
+# --- Configuring Kernel Same-page Merging  on SystemD hosts ---
+- name: "Adjusting KSM Settings"
+  template:
+    src: "ksmnetdata.j2"
+    dest: "{{ ksmsystemd }}"
+  when:
+    - ksmset == True
+    - ansible_service_mgr == "systemd"
+  notify:
+    - 'reload daemon'
+    - 'start ksm'
+    - 'restart netdata'
+  register: ksmsystemd
+
+
+# --- Configuring Kernel Same-page Merging on Non SystemD hosts ---
+- name: "Ajdusting KSM Settings on Service_Mgr"
+  blockinfile:
+    path: "{{ rclocal }}"
+    marker: "# --- {mark} isca0.netdata role --- "
+    block: |
+      echo 1 > /sys/kernel/mm/ksm/run
+      echo 1000 > /sys/kernel/mm/ksm/sleep_millisecs
+  notify:
+    - 'load ksmlocal'
+    - 'restart netdata'
+  when:
+    - ksmset == True
+    - ansible_service_mgr != "systemd"
+- meta: flush_handlers
+
+

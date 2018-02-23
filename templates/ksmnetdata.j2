@@ -1,0 +1,14 @@
+[Unit]
+Description = KSM Netdata Setup (isca)
+Before=netdata.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+Environment="ksmrun=/sys/kernel/mm/ksm/run" "ksmsleep=/sys/kernel/mm/ksm/sleep_millisecs"
+ExecStartPre=-/bin/sh -c '(echo 1 > $ksmrun)'
+ExecStart=/bin/sh -c '(echo 1000 > $ksmsleep)'
+ExecStop=/bin/sh -c '(echo 0 > $ksmrun; echo 20 > $ksmsleep)'
+
+[Install]
+ WantedBy=multi-user.target

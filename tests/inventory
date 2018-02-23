@@ -1,3 +1,7 @@
 localhost
+#localhost ansible_ssh_user=vagrant ansible_port=2222
+#localhost ansible_ssh_user=vagrant ansible_port=2201
+#localhost ansible_ssh_user=core ansible_port=2200 ansible_python_interpreter=/opt/bin/python
+
 
 

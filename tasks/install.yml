@@ -2,6 +2,7 @@
 # === Installing Netdata ===
 # 
 
+
 # --- Checking netdata dir ---
 - name: "Check install"
   stat:
@@ -18,12 +19,39 @@
     validate_certs: false
   when: 
     - netdata_installed.stat.exists == False or netdataupdate == true 
+    - "{{ ansible_python_version | version_compare('2.7.5', '>=') }}"
   register: kickstart
+
+
+# --- Download netdata on older python versions ---
+- name: "Downloading NetData for OldPythons"
+  shell: "(wget {{ kickstarturl }} -O  {{ kickstart_installer }};
+           chmod 755 {{ kickstart_installer }})"
+  when: 
+    - netdata_installed.stat.exists == False or netdataupdate == true 
+    - "{{ ansible_python_version | version_compare('2.7.5', '<') }}"
+  register: kickstartoldpython
+
+
+# --- Installing Dependencies ---
+- name: "Installing dependencies"
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - libselinux-python
+  when:
+    - ansible_distribution == "CentOS"
+    - "{{ ansible_distribution_version | version_compare('6.9', '<=') }}" 
+  register: PythonSelinuxInstalled
+
 
 # --- Installing netdata static ---
 - name: "Installing Netdata Static with kickstart"
   #command: "{{ kickstart }} --dont-wait --dont-start-it"
   command: "{{ kickstart_installer }} --dont-wait"
-  when: kickstart.changed
+  when: 
+    - kickstart.changed or kickstartoldpython.changed
   register: installed
+
 
