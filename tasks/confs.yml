@@ -70,4 +70,29 @@
     - ansible_service_mgr != "systemd"
 - meta: flush_handlers
 
+# --- Configuracao do Registry ---
+- name: "Setup registry Master"
+  blockinfile:
+    path: "{{ netdata_config }}"
+    marker: "# {mark} registry setted by isca0.netdata"
+    content: |
+      [registry]
+        enabled = yes
+        registry to announce = http://{{ registrydomain }}:19999
+  when:
+    - registry == True
+    - registrymaster == ansible_nodename 
+
+- name: "Setup registry Nodes"
+  blockinfile:
+    path: "{{ netdata_config }}"
+    marker: "# {mark} registry setted by isca0.netdata"
+    content: |
+      [registry]
+        enabled = no
+        registry to announce = http://{{ registrydomain }}:19999
+  when:
+    - registry == True
+    - registrymaster != ansible_nodename
+
 

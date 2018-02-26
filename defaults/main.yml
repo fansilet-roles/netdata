@@ -6,6 +6,17 @@
 # If setted to true update the current installation of netdata
 netdataupdate: False
 
+# --- Registry Settings ---
+# if setted to true will will use registrymaster and registrydomain to define setup registry
+registry: False
+
+# registrymaster defines which server will be setted as registry node
+# tip: use here the same hostname you defined on ansible_nodename
+registrymaster: "localhost"
+
+# registrydomain is the domainname or ip of the registry master node
+registrydomain: "{{ registrymaster }}"
+
 # --- Update Netdata ---
 # How much time you want to retention default is 3600 = 1Hour
 historytime: 3600

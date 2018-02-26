@@ -22,6 +22,13 @@ This is the variables you can adjust in your playbook:
 
   **netdataupdate** : can be setted to True or False. If True netdata will be installed and updated.  
   
+  **registry** : if setted to true will use `registrymaster` and `registrydomain`.Default False
+  
+  **registrymaster** : define name or ip address of the registry master node.
+  
+  **registrydomain** : define the name which registry will use to register. By default is will take  
+  the same value from `registrymaster` variable.
+  
   **historytime** : How much time you want to retention of data. Default is 3600 == 1Hour
   
   **updatetime** : Adjust data collection frequency, Default 1 == 1s. On weak devices set this to 3 or more.
@@ -112,7 +119,8 @@ only to private subnets that matchs with 10.0 and 192.168.
 This is the most complete sample os this rule it uses almost all variables. Using this way you  
 netdata will update even if it already is installed, set the retention time of data to 4 hours  
 and data collection will be every 2 seconds and it will bind to macthed ip address finded  
-on the match subnets.
+on the match subnets. In this sample we also are using registry and foo.bar.local as our registry  
+master node.  
 
 ```
 - name: "Deploy Netdata"
@@ -120,6 +128,8 @@ on the match subnets.
   remote_user: myuser
   become: true
   vars:
+    registry: true
+    registrymaster: foo.bar.local
     netdataupdate: True
     historytime: 14400
     updatetime: 2
@@ -130,6 +140,7 @@ on the match subnets.
   roles:
     - isca0.netdata
 ```
+PS: The `registrymaster` need's match with some ip address or name in your inventory.
 
 License
 -------
