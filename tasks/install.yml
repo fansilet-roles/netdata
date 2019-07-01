@@ -19,7 +19,7 @@
     validate_certs: false
   when: 
     - netdata_installed.stat.exists == False or netdataupdate == true 
-    - "{{ ansible_python_version | version_compare('2.7.5', '>=') }}"
+    - "{{ ansible_python_version is version_compare('2.7.5', '>=') }}"
   register: kickstart
 
 
@@ -29,7 +29,7 @@
            chmod 755 {{ kickstart_installer }})"
   when: 
     - netdata_installed.stat.exists == False or netdataupdate == true 
-    - "{{ ansible_python_version | version_compare('2.7.5', '<') }}"
+    - "{{ ansible_python_version is version_compare('2.7.5', '<') }}"
   register: kickstartoldpython
 
 
@@ -42,7 +42,7 @@
     - libselinux-python
   when:
     - ansible_distribution == "CentOS"
-    - "{{ ansible_distribution_version | version_compare('6.9', '<=') }}" 
+    - "{{ ansible_distribution_version is version_compare('6.9', '<=') }}"
   register: PythonSelinuxInstalled
 
 
