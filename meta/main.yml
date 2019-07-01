@@ -1,6 +1,6 @@
 galaxy_info:
   author: isca
-  description: "Install and update netdata with registry support and private binding"
+  description: "Install and update netdata with internal ipaddr binding on CoreOS/CentOS/RHEL"
   company: "isca.space"
   license: "license (LGPL-3.0)"
   min_ansible_version: 2.7
@@ -9,9 +9,6 @@ galaxy_info:
       versions:
         - 7
         - 6
-    - name: CoreOS
-      versions:
-        - all
   galaxy_tags:
     - netdata
     - registry
